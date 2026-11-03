@@ -1,9 +1,8 @@
 import { Router } from "express";
 import { parseId } from "../../validation";
-import { CoursesService } from "./courses.service";
+import type { CoursesService } from "./courses.service";
 
-export function coursesRoutes() {
-  const service = new CoursesService();
+export function coursesRoutes(service: CoursesService) {
   const router = Router();
 
   router.get("/", async (_req, res) => {
