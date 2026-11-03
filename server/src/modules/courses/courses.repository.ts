@@ -1,14 +1,21 @@
-import { pool } from "../../database/connection";
+import type { Database } from "../../database/connection";
 
 export interface Course {
   id: number;
   name: string;
 }
 
-export class PgCourseRepository {
+export interface CourseRepository {
+  create(data: { name: string }): Promise<Course>;
+  findAll(): Promise<Course[]>;
+  findOne(id: number): Promise<Course | undefined>;
+}
+
+export class PgCourseRepository implements CourseRepository {
+  constructor(private readonly db: Database) {}
 
   async create(data: { name: string }) {
-    const { rows } = await pool.query<Course>(
+    const { rows } = await this.db.query<Course>(
       "INSERT INTO courses (name) VALUES ($1) RETURNING id, name",
       [data.name],
     );
@@ -17,13 +24,13 @@ export class PgCourseRepository {
 
   async findAll() {
     return (
-      await pool.query<Course>("SELECT id, name FROM courses ORDER BY id")
+      await this.db.query<Course>("SELECT id, name FROM courses ORDER BY id")
     ).rows;
   }
 
   async findOne(id: number) {
     return (
-      await pool.query<Course>(
+      await this.db.query<Course>(
         "SELECT id, name FROM courses WHERE id = $1",
         [id],
       )
