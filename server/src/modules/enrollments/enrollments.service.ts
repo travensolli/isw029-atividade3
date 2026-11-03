@@ -2,10 +2,10 @@ import { HttpError } from "../../errors";
 import { positiveInteger, validateBody } from "../../validation";
 import { isUniqueViolation } from "../../database/unique-violation";
 import { isForeignKeyViolation } from "../../database/foreign-key-violation";
-import { PgEnrollmentRepository } from "./enrollments.repository";
+import type { EnrollmentRepository } from "./enrollments.repository";
 
 export class EnrollmentsService {
-  private readonly repository = new PgEnrollmentRepository();
+  constructor(private readonly repository: EnrollmentRepository) {}
 
   async create(input: unknown) {
     const data = validateBody(input);
